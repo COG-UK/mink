@@ -16,7 +16,6 @@ setup(name='mink',
       "mink/scripts/mutation_template.py"],
       package_data={"civet":["data/*","data/mapping_files/*"]},
       install_requires=[
-            "biopython>=1.70",
             "pytools>=2020.1",
             'pandas>=1.0.1',
             "matplotlib>=3.2.1",
@@ -27,7 +26,8 @@ setup(name='mink',
             "adjustText>=0.7.3",
             "grip>=4.5.2",
             "tabulate>=0.8.7",
-            "seaborn>=0.11.0"
+            "seaborn>=0.11.0",
+            "epiweeks>=2.1.1"
         ],
       description='Mutation I N K',
       url='https://github.com/COG-UK/mink',
