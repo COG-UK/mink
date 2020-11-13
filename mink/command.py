@@ -13,7 +13,7 @@ def main(sysargs = sys.argv[1:]):
 
     cwd = os.getcwd()
 
-    parser = argparse.ArgumentParser(description='Run mutation report')
+    parser = argparse.ArgumentParser(add_help=False, description='Run mutation report')
 
     parser.add_argument("--metadata-file", dest="metadata_file", help="path to metadata file with date and time information for sequences.")
     parser.add_argument("--snp-file", dest="snp_file", help="path to csv file containing which snps are in which sequences")
@@ -24,6 +24,8 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--outdir", default="mink_results", help="output directory name")
     parser.add_argument("--date-start", dest = "date_start", help="restrict analysis to this date at the earliest")
     parser.add_argument("--date-end", dest="date_end", help="restrict analysis to this date at the latest")
+    
+    parser.add_argument("-h","--help", action="store_true", dest="help")
 
     """
     Exit with help menu if no args supplied

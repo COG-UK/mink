@@ -99,8 +99,8 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
 
                     for snp in snps.split("|"):
                         if snp in snp_list:
-                            query_to_snps[seq_name].append(actual_snp)
-                            snp_to_queries[actual_snp].append(seq_name)
+                            query_to_snps[seq_name].append(snp)
+                            snp_to_queries[snp].append(seq_name)
 
     for i in snp_list:
         if i not in snp_to_queries.keys():
