@@ -11,19 +11,31 @@ import report_writer as r_writer
 
 def main(sysargs = sys.argv[1:]):
 
-    cwd = os.get_cwd()
+    cwd = os.getcwd()
 
     parser = argparse.ArgumentParser(description='Run mutation report')
 
-    parser.add_argument("--metadata-file", dest="metadata_file")
-    parser.add_argument("--snp-file", dest="snp_file")
+    parser.add_argument("--metadata-file", dest="metadata_file", help="path to metadata file with date and time information for sequences.")
+    parser.add_argument("--snp-file", dest="snp_file", help="path to csv file containing which snps are in which sequences")
     parser.add_argument("--snp-list",help="list of snps desired in the report", required=True,dest="snp_list")
-    parser.add_argument("--snps-for-matrix", dest="snps_for_matrix", default=None)
+    parser.add_argument("--snps-for-matrix", dest="snps_for_matrix", default=None, help="list of snps for co-occurence matrix. Default is all snps in snp-list")
     parser.add_argument('--date-data', help="When the report was run", dest="date_data")
-    parser.add_argument("--figdir", default="figures")
-    parser.add_argument("--outdir", default="mink_results")
-    parser.add_argument("--date-start", dest = "date_start")
-    parser.add_argument("--date-end", dest="date_end")
+    parser.add_argument("--figdir", default="figures", help="figure directory name")
+    parser.add_argument("--outdir", default="mink_results", help="output directory name")
+    parser.add_argument("--date-start", dest = "date_start", help="restrict analysis to this date at the earliest")
+    parser.add_argument("--date-end", dest="date_end", help="restrict analysis to this date at the latest")
+
+    """
+    Exit with help menu if no args supplied
+    """
+    if len(sysargs)<1: 
+        parser.print_help()
+        sys.exit(0)
+    else:
+        args = parser.parse_args(sysargs)
+        if args.help:
+            parser.print_help()
+            sys.exit(0)
 
     args = parser.parse_args()
 
