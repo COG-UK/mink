@@ -98,8 +98,7 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
                     snps = line["variants"]
 
                     for snp in snps.split("|"):
-                        actual_snp = snp.split(":")[1] #not sure about this, could just pull it including the gene name
-                        if actual_snp in snp_list:
+                        if snp in snp_list:
                             query_to_snps[seq_name].append(actual_snp)
                             snp_to_queries[actual_snp].append(seq_name)
 
