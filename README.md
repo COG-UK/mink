@@ -1,6 +1,6 @@
 # mink
 
-**M**utation **I**ntegrated **N**umerical **K**inetics (tbc)
+**M**utation **I**dentification **N** **K**inetics (tbc)
 
 **mink** is a report generation tool for tracking mutations of interest through time and space in the UK. 
 
