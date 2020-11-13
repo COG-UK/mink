@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 from collections import defaultdict
 from collections import Counter
@@ -49,7 +50,7 @@ def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_f
     return df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict
 
 
-def write_report(outdir, date_data, figdir, figdir_writing, df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict):
+def write_report(outdir, date_data, figdir, figdir_writing, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict):
    
     ## Writing the report ##
     print("Writing the report")
@@ -61,7 +62,7 @@ def write_report(outdir, date_data, figdir, figdir_writing, df, snp_list, adm2_p
 
     fw.write("Please note that adm2s can be joined together if there are sequences with ambiguous location data, so the adm2 number should only be used as an estimate.\n\n")
 
-    fw.write(df.to_markdown())
+    fw.write(snp_df.to_markdown())
     fw.write("\n\n")
 
     fw.write("## SNP summaries\n")
@@ -113,7 +114,7 @@ def write_report(outdir, date_data, figdir, figdir_writing, df, snp_list, adm2_p
 
     fw.close()
 
-def generate_report(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk):
+def generate_report(metadata_file, date_data, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk):
 
-    df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict = process_data
-    write_report(df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict)
+    snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk)
+    write_report(outdir, date_data, figdir, figdir_writing, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict)

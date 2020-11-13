@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import math
 import pandas as pd 
 from collections import defaultdict
 import geopandas
@@ -156,7 +159,7 @@ def make_map(centroid_geo, all_uk, figdir, snp):
 
     base = all_uk.plot(ax=ax, color="steelblue")
 
-    centroids_final.plot(ax=base, color="goldenrod", markersize=centroids_final["seq_count"]^0.5)
+    centroids_final.plot(ax=base, color="goldenrod", markersize=centroids_final["seq_count"]**0.5)
 
     ax.axis("off")
 

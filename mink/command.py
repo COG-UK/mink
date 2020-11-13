@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+import sys
 import argparse
 import os
 import datetime as dt
@@ -13,7 +15,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument('--date-data', help="When the report was run", dest="date_data")
     parser.add_argument("--metadata-file", dest="metadata_file")
     parser.add_argument("--snp-file", dest="snp_file")
-    parser.add_argument("--snp-list",help="list of snps desired in the report", dest="snp_list")
+    parser.add_argument("--snp-list",help="list of snps desired in the report", required=True,dest="snp_list")
     parser.add_argument("--figdir")
     parser.add_argument("--snps-for-matrix", dest="snps_for_matrix", default=None)
     parser.add_argument("--uk-map", dest="uk_map")
@@ -75,7 +77,7 @@ def main(sysargs = sys.argv[1:]):
         date_end = dt.date.today()
 
     
-    r_writer.generate_report(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk)
+    r_writer.generate_report(metadata_file, date_data, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk)
 
 if __name__ == '__main__':
     main()

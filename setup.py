@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from setuptools import setup, find_packages
 from setuptools.command.build_py import build_py
 import glob
@@ -13,7 +15,7 @@ setup(name='mink',
       packages=find_packages(),
       scripts=["mink/scripts/mapping.py",
       "mink/scripts/mutation_funcs.py",
-      "mink/scripts/mutation_template.py"],
+      "mink/scripts/report_writer.py"],
       package_data={"civet":["data/*","data/mapping_files/*"]},
       install_requires=[
             "pytools>=2020.1",
