@@ -22,8 +22,8 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--ni-counties", dest="ni_counties")
     parser.add_argument("--channel-islands", dest="channel_islands")
     parser.add_argument("--outdir")
-    parser.add_argument("--date-range-start", dest = "date_start")
-    parser.add_argument("--date-range-end", dest="date_end")
+    parser.add_argument("--date-start", dest = "date_start")
+    parser.add_argument("--date-end", dest="date_end")
 
 
     args = parser.parse_args()
