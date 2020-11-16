@@ -136,6 +136,7 @@ def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
                 date_range = f'{earliest_date} to {latest_date}'
             else:
                 date_range = "NA"
+                snp_last_date[snp] = dt.date.today()
 
         else:
             num_adm2s = 0
