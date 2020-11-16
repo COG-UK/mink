@@ -141,6 +141,7 @@ def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
         else:
             num_adm2s = 0
             date_range = "NA"
+            snp_last_date[snp] = dt.date.today()
 
         df_dict["SNP of interest"].append(snp)
         df_dict["Number of sequences in the UK"].append(num_seqs)
