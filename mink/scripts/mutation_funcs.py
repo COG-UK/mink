@@ -231,11 +231,13 @@ def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data
                     new_dict[day] = 0
             
         for days in total_day_dict.keys():
-            if days not in new_dict:
+            if days not in new_dict and days < snp_last_date[snp]:
                 new_dict[days] = 0
                 
         new_dict_sorted = OrderedDict(sorted(new_dict.items()))
         new_snp_dict[snp] = new_dict_sorted
+
+    print(new_snp_dict)
 
     plt.rc('xtick',labelsize=20)
     plt.rc('ytick',labelsize=20)
