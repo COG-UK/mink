@@ -12,7 +12,7 @@ import mutation_funcs as mfunk
 import mapping as map_funks
 
 
-def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk):
+def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk):
 
     ##Data procesing and manipulation
     print("Parsing metadata")
@@ -41,16 +41,16 @@ def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_f
             adm2_perc_dict[snp] = False
 
     print("Making tables")
-    df, snp_to_dates = mfunk.make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict)
+    df, snp_to_dates, snp_last_date = mfunk.make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict)
     df.to_csv(f"{outdir}/SNP_summary_table.csv")
 
     print("Making line figure")
-    mfunk.make_overall_lines(taxon_dict,snp_to_dates,figdir_writing, None)
+    mfunk.make_overall_lines(taxon_dict,snp_to_dates,snp_last_date,figdir_writing, raw_data_dir, None)
 
-    return df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict
+    return df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict
 
 
-def write_report(outdir, date_data, figdir, figdir_writing, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict):
+def write_report(outdir, date_data, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date,taxon_dict):
    
     ## Writing the report ##
     print("Writing the report")
@@ -85,7 +85,7 @@ def write_report(outdir, date_data, figdir, figdir_writing, snp_df, snp_list, ad
         if len(snp_to_queries[snp]) > 0:
             small_snp_dict = defaultdict(list)
             small_snp_dict[snp] = snp_to_dates[snp]
-            mfunk.make_overall_lines(taxon_dict,small_snp_dict,figdir_writing, snp)
+            mfunk.make_overall_lines(taxon_dict,small_snp_dict, snp_last_date, figdir_writing, raw_data_dir, snp)
 
             fw.write(f'![]({figdir}/{snp}_line.svg)')
             fw.write("\n\n")
@@ -114,7 +114,7 @@ def write_report(outdir, date_data, figdir, figdir_writing, snp_df, snp_list, ad
 
     fw.close()
 
-def generate_report(metadata_file, date_data, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk):
+def generate_report(metadata_file, date_data, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk):
 
-    snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk)
-    write_report(outdir, date_data, figdir, figdir_writing, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, taxon_dict)
+    snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk)
+    write_report(outdir, date_data, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict)

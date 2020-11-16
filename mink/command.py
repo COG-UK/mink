@@ -22,6 +22,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument('--date-data', help="When the report was run", dest="date_data")
     parser.add_argument("--figdir", default="figures", help="figure directory name")
     parser.add_argument("--outdir", default="mink_results", help="output directory name")
+    parser.add_argument("--raw-data-dir", default="raw_data", help="Where the raw data will be written to", dest="raw_data_dir")
     parser.add_argument("--date-start", dest = "date_start", help="restrict analysis to this date at the earliest")
     parser.add_argument("--date-end", dest="date_end", help="restrict analysis to this date at the latest")
     
@@ -46,6 +47,7 @@ def main(sysargs = sys.argv[1:]):
     snp_file = args.snp_file
     snp_list = args.snp_list
     figdir = args.figdir
+    raw_data_dir = args.raw_data_dir
     snps_for_matrix = args.snps_for_matrix
     outdir = args.outdir
     date_start = args.date_start
@@ -63,6 +65,12 @@ def main(sysargs = sys.argv[1:]):
     if not os.path.exists(figdir_writing):
         os.mkdir(figdir_writing)
 
+    if outdir not in raw_data_dir:
+        raw_data_dir = os.path.join(outdir,raw_data_dir)
+
+    if not os.path.exists(raw_data_dir):
+        os.mkdir(raw_data_dir)
+
     if type(snp_list) == str:
         snp_list = snp_list.split(",")
     if type(snps_for_matrix) == str:
@@ -79,7 +87,7 @@ def main(sysargs = sys.argv[1:]):
     if args.date_end:
         date_end = dt.datetime.strptime(args.date_end,"%Y-%m-%d").date()
     else:
-        date_end = dt.date.today()
+        date_end = (dt.date.today() - dt.timedelta(14)) #this just isn't working anyway
 
 
     uk = pkg_resources.resource_filename('mink', 'data/mapping_files/gadm36_GBR_2.json')
@@ -91,7 +99,7 @@ def main(sysargs = sys.argv[1:]):
     all_uk = map_funks.generate_all_uk_dataframe(map_files)
 
     
-    r_writer.generate_report(metadata_file, date_data, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, all_uk)
+    r_writer.generate_report(metadata_file, date_data, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk)
 
 if __name__ == '__main__':
     main()

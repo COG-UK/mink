@@ -113,6 +113,8 @@ def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
 
     df_dict = defaultdict(list)
     snp_to_dates = defaultdict(list)
+    snp_last_date = {}
+
 
     for snp, query_list in snp_to_queries.items():
         adm2s = []
@@ -130,6 +132,7 @@ def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
             if len(dates) > 0:
                 earliest_date = min(dates)
                 latest_date = max(dates)
+                snp_last_date[snp] = latest_date
                 date_range = f'{earliest_date} to {latest_date}'
             else:
                 date_range = "NA"
@@ -148,10 +151,10 @@ def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
     df = pd.DataFrame(df_dict)
     df.set_index("SNP of interest", inplace=True)
 
-    return df, snp_to_dates
+    return df, snp_to_dates, snp_last_date
 
 
-def make_overall_lines(taxon_dict, snp_to_dates, figdir, focal_snp):
+def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data_dir, focal_snp):
 
     ## Get total number of samples 
     all_dates = []
@@ -173,6 +176,8 @@ def make_overall_lines(taxon_dict, snp_to_dates, figdir, focal_snp):
     df_all = pd.DataFrame(total_df_dict)
 
     rolling_mean = df_all.Counts.rolling(window=7).mean()
+    rolling_mean.to_csv(f"{raw_data_dir}/rolling_average_totals.csv")
+    df_all.to_csv(f"{raw_data_dir}/totals_counts.csv")
 
     for mean, day in zip(rolling_mean, total_df_dict["Day"]):
         total_day_dict[day] = mean
@@ -201,6 +206,9 @@ def make_overall_lines(taxon_dict, snp_to_dates, figdir, focal_snp):
                 day_dict[day] = mean
 
             snp_dict[snp] = day_dict
+
+            df.to_csv(f"{raw_data_dir}/{snp}_counts.csv")
+            rolling_mean.to_csv(f"{raw_data_dir}/{snp}_rolling_mean_counts.csv")
             
         else:
             for day in total_day_dict:
@@ -214,10 +222,11 @@ def make_overall_lines(taxon_dict, snp_to_dates, figdir, focal_snp):
     for snp, dictionary in snp_dict.items():
         new_dict = {}
         for day, mean in dictionary.items():
-            freq = mean/total_day_dict[day]
-            new_dict[day] = freq
-            if np.isnan(mean):
-                new_dict[day] = 0
+            if day < snp_last_date[snp]:
+                freq = mean/total_day_dict[day]
+                new_dict[day] = freq
+                if np.isnan(mean):
+                    new_dict[day] = 0
             
         for days in total_day_dict.keys():
             if days not in new_dict:
@@ -261,6 +270,7 @@ def make_overall_lines(taxon_dict, snp_to_dates, figdir, focal_snp):
         plt.savefig(f"{figdir}/all_snps_line.svg", format='svg')
     else:
         plt.savefig(f"{figdir}/{focal_snp}_line.svg", format='svg')
+
 
 
 def make_heatmap(snps, query_to_snps, figdir):
