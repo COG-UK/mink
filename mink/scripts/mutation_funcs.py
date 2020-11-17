@@ -156,7 +156,7 @@ def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
     return df, snp_to_dates, snp_last_date
 
 
-def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data_dir, focal_snp):
+def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data_dir, focal_snp, group):
 
     ## Get total number of samples 
     all_dates = []
@@ -218,10 +218,10 @@ def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data
             
             snp_dict[snp] = day_dict
    
-        plot_frequencies(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp)
-        plot_counts(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp)
+        plot_frequencies(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp, group)
+        plot_counts(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp, group)
 
-def plot_frequencies(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp):
+def plot_frequencies(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp, group):
 
     ## Divide snp seqs by total number of seqs 
     new_snp_dict = defaultdict(dict)
@@ -241,9 +241,9 @@ def plot_frequencies(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp)
         new_dict_sorted = OrderedDict(sorted(new_dict.items()))
         new_snp_dict[snp] = new_dict_sorted
 
-        plot_lines(new_snp_dict, figdir, focal_snp, "Frequency of SNP (7 day rolling average", "frequencies")
+        plot_lines(new_snp_dict, figdir, focal_snp, "Frequency of SNP (7 day rolling average", "frequencies", group)
 
-def plot_counts(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp):
+def plot_counts(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp, group):
      
     new_snp_dict = defaultdict(dict)
 
@@ -256,9 +256,9 @@ def plot_counts(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp):
 
         new_snp_dict[snp] = OrderedDict(sorted(new_dict.items()))
 
-    plot_lines(new_snp_dict, figdir, focal_snp, "Counts of sequences with SNP", "counts")
+    plot_lines(new_snp_dict, figdir, focal_snp, "Counts of sequences with SNP", "counts", group)
 
-def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile):
+def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile, group):
 
     plt.rc('xtick',labelsize=20)
     plt.rc('ytick',labelsize=20)
@@ -291,12 +291,12 @@ def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile):
     ax.set_xlabel("Date", fontsize=20)
 
     if not focal_snp:
-        plt.savefig(f"{figdir}/all_snps_{savefile}.svg", format='svg')
+        plt.savefig(f"{figdir}/{group}_{savefile}.svg", format='svg')
     else:
         plt.savefig(f"{figdir}/{focal_snp}_{savefile}.svg", format='svg')
 
 
-def make_heatmap(snps, query_to_snps, figdir):
+def make_heatmap(snps, query_to_snps, figdir, group):
 
     mut_dict = defaultdict(dict)
     for snp in snps:
@@ -337,6 +337,6 @@ def make_heatmap(snps, query_to_snps, figdir):
     # - square layout of the heatmap
     # - cbar_kws customises the heatmap on the side
 
-    plt.savefig(f"{figdir}/pairwise_cooccurance.svg", format="svg")
+    plt.savefig(f"{figdir}/pairwise_cooccurance_{group}.svg", format="svg")
 
 

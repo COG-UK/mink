@@ -4,6 +4,8 @@ import argparse
 import os
 import datetime as dt
 import pkg_resources
+import csv
+from collections import defaultdict
 
 import mapping as map_funks
 import report_writer as r_writer
@@ -17,7 +19,8 @@ def main(sysargs = sys.argv[1:]):
 
     parser.add_argument("--metadata-file", dest="metadata_file", help="path to metadata file with date and time information for sequences.")
     parser.add_argument("--snp-file", dest="snp_file", help="path to csv file containing which snps are in which sequences")
-    parser.add_argument("--snp-list",help="list of snps desired in the report", required=True,dest="snp_list")
+    parser.add_argument("--snp-list",help="list of snps desired in the report", dest="snp_list")
+    parser.add_argument("--snp-csv", help="list of snps in a csv desired in the report", dest="snp_csv")
     parser.add_argument("--snps-for-matrix", dest="snps_for_matrix", default=None, help="list of snps for co-occurence matrix. Default is all snps in snp-list")
     parser.add_argument('--date-data', help="When the report was run", dest="date_data")
     parser.add_argument("--figdir", default="figures", help="figure directory name")
@@ -25,6 +28,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--raw-data-dir", default="raw_data", help="Where the raw data will be written to", dest="raw_data_dir")
     parser.add_argument("--date-start", dest = "date_start", help="restrict analysis to this date at the earliest")
     parser.add_argument("--date-end", dest="date_end", help="restrict analysis to this date at the latest")
+    parser.add_argument("--title", dest="title", default="Mutation report", help="report title")
     
     parser.add_argument("-h","--help", action="store_true", dest="help")
 
@@ -45,13 +49,16 @@ def main(sysargs = sys.argv[1:]):
     date_data = args.date_data
     metadata_file = args.metadata_file
     snp_file = args.snp_file
-    snp_list = args.snp_list
     figdir = args.figdir
     raw_data_dir = args.raw_data_dir
     snps_for_matrix = args.snps_for_matrix
     outdir = args.outdir
     date_start = args.date_start
     date_end = args.date_end
+    title = args.title
+
+    snp_list = args.snp_list
+    snp_csv = args.snp_csv
 
     if not os.path.exists(outdir):
         os.mkdir(os.path.join(cwd,outdir))
@@ -71,11 +78,6 @@ def main(sysargs = sys.argv[1:]):
     if not os.path.exists(raw_data_dir):
         os.mkdir(raw_data_dir)
 
-    if type(snp_list) == str:
-        snp_list = snp_list.split(",")
-    if type(snps_for_matrix) == str:
-        snps_for_matrix = snps_for_matrix.split(",")
-
     if not snps_for_matrix:
         snps_for_matrix = snp_list
 
@@ -87,7 +89,7 @@ def main(sysargs = sys.argv[1:]):
     if args.date_end:
         date_end = dt.datetime.strptime(args.date_end,"%Y-%m-%d").date()
     else:
-        date_end = (dt.date.today() - dt.timedelta(14)) #this just isn't working anyway
+        date_end = dt.date.today()
 
 
     uk = pkg_resources.resource_filename('mink', 'data/mapping_files/gadm36_GBR_2.json')
@@ -98,8 +100,35 @@ def main(sysargs = sys.argv[1:]):
 
     all_uk = map_funks.generate_all_uk_dataframe(map_files)
 
+    group_descriptions = {}
+    if snp_csv:
+        snps = defaultdict(list)
+        with open(snp_csv) as f:
+            r = csv.DictReader(f)
+            data = [i for i in r]
+            for line in data:
+                
+                snp_list = line["snps"].split(";")
+                group = line["group"]
+                
+                snps[group] = snp_list
+                
+                try:
+                    description = line["description"]
+                except:
+                    description = ""
+
+                group_descriptions[group] = description
     
-    r_writer.generate_report(metadata_file, date_data, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk)
+    elif snp_list:
+        snps = snp_list.split(",")
+
+    if type(snps_for_matrix) == str:
+        snps_for_matrix = snps_for_matrix.split(",")
+    else:
+        snps_for_matrix = None
+
+    r_writer.generate_report(metadata_file, date_data, snp_file, snps, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title)
 
 if __name__ == '__main__':
     main()
