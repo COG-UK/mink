@@ -12,6 +12,7 @@ from epiweeks import Week,Year
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import re
 
 import logging
 logging.getLogger("imported_module").setLevel(logging.ERROR)
@@ -91,6 +92,8 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
     query_to_snps = defaultdict(list)
     snp_to_queries = defaultdict(list)
 
+    regex_to_query = defaultdict(set)
+
     with open(snp_file) as f:
         reader = csv.DictReader(f)
         data = [r for r in reader]
@@ -100,24 +103,28 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
                 if taxon_dict[seq_name].date >= date_start and taxon_dict[seq_name].date <=date_end:
                     snps = line["variants"]
 
-                    for snp in snps.split("|"):
-                        if snp in snp_list:
-                            query_to_snps[seq_name].append(snp)
-                            snp_to_queries[snp].append(seq_name)
+                    for snp in snp_list:
+                        identified_snps = re.findall(snp, snps)
+                        for ide in identified_snps:
+                            query_to_snps[seq_name].append(ide)
+                            snp_to_queries[ide].append(seq_name)
+                            if ide != snp:
+                                regex_to_query[snp].add(ide)
 
+    
     for i in snp_list:
-        if i not in snp_to_queries.keys():
+        if "." not in i and i not in snp_to_queries.keys():
             snp_to_queries[i] = []
 
-            
-    return query_to_snps, snp_to_queries
+    new_snp_list = list(snp_to_queries.keys())
+
+    return query_to_snps, snp_to_queries, new_snp_list, regex_to_query
 
 def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
 
     df_dict = defaultdict(list)
     snp_to_dates = defaultdict(list)
     snp_last_date = {}
-
 
     for snp, query_list in snp_to_queries.items():
         adm2s = []
@@ -360,7 +367,6 @@ def make_heatmap(snps, query_to_snps, snp_to_query, figdir, group):
     # - annotate set to true to display number
     # - the fmt='.2g' bit rounds numbers to 2 decimal places
     # - square layout of the heatmap
-    # - cbar_kws customises the heatmap on the side
 
     plt.savefig(f"{figdir}/pairwise_cooccurance_{group}.svg", format="svg", bbox_inches="tight")
 

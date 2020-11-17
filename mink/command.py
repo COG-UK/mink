@@ -109,7 +109,14 @@ def main(sysargs = sys.argv[1:]):
             for line in data:
                 snp_list = line["snps"].split(";")
                 group = line["group"]
-                snps[group] = snp_list 
+
+                new_snp_list = []
+                for i in snp_list:
+                    if i[-1].isdigit():
+                        i += "."
+                    new_snp_list.append(i)
+
+                snps[group] = new_snp_list 
                 
                 try:
                     description = line["description"]
@@ -119,17 +126,24 @@ def main(sysargs = sys.argv[1:]):
                 try:
                     snps_for_matrix_list = line["snps_for_matrix"].split(";")
                 except:
-                    snps_for_matrix_list = snp_list
+                    snps_for_matrix_list = None
 
                 group_descriptions[group] = description
                 snps_for_matrix[group] = snps_for_matrix_list
     
     elif snp_list:
         snps = snp_list.split(",")
+        new_snp_list = []
+        for i in snp_list:
+            if i[-1].isdigit():
+                i += "."
+            new_snp_list.append(i)
+        snp_list = new_snp_list
+
         if type(args.snps_for_matrix) == str:
             snps_for_matrix = snps_for_matrix.split(",")
         else:
-            snps_for_matrix = snps
+            snps_for_matrix = None
 
     r_writer.generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, date_start, date_end, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title)
 
