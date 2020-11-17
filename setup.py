@@ -13,6 +13,7 @@ from mink import __version__, _program
 setup(name='mink',
       version=__version__,
       packages=find_packages(),
+      python_requires='<=3.8',
       scripts=["mink/scripts/mapping.py",
       "mink/scripts/mutation_funcs.py",
       "mink/scripts/report_writer.py"],
