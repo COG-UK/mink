@@ -25,7 +25,7 @@ def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_f
     query_to_snps, snp_to_queries = mfunk.parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end)
 
     print("Making heatmap")
-    mfunk.make_heatmap(snps_for_matrix, query_to_snps, figdir_writing, group)
+    mfunk.make_heatmap(snps_for_matrix, query_to_snps, snp_to_queries, figdir_writing, group)
 
     print("Making maps and sorting adm2 out")
     adm2_perc_dict = defaultdict(dict)

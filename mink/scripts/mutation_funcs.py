@@ -301,7 +301,7 @@ def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile, group):
     plt.close()
 
 
-def make_heatmap(snps, query_to_snps, figdir, group):
+def make_heatmap(snps, query_to_snps, snp_to_query, figdir, group):
 
     mut_dict = defaultdict(dict)
     for snp in snps:
@@ -315,11 +315,24 @@ def make_heatmap(snps, query_to_snps, figdir, group):
                     mut_dict[i][j]+=1
     
     # if there's no link then add it to the counter as 1, so that when it becomes logged it == 0
+    # other = mut_dict.copy()
+    other = defaultdict(dict)
     for i in mut_dict:
         match = mut_dict[i]
         for mut in snps:
             if mut not in match:
                 mut_dict[i][mut] = 1
+                other[i][mut] = 0
+            else:
+                other[i][mut] = mut_dict[i][mut]
+            
+        if len(snp_to_query[i]) == 0:
+            mut_dict[i][i] = 1
+        else:
+            mut_dict[i][i] = len(snp_to_query[i])
+        
+        other[i][i] = len(snp_to_query[i])
+
     
     data = {}
     index = []
@@ -331,8 +344,15 @@ def make_heatmap(snps, query_to_snps, figdir, group):
     df = pd.DataFrame(data, columns = index, index=index)
     df_log = df.transform(lambda x : np.log10(x))
 
+    other_data = {}
+    other_index = []
+    for i in sorted(other):
+        other_index = [j for j in sorted(other[i])] # sorted list of mut dict keys
+        other_data[i] = [other[i][j] for j in sorted(other[i])] 
+    labels = pd.DataFrame(other_data, columns = other_index, index=other_index)
+
     muted_pal = sns.cubehelix_palette(as_cmap=True) # get nice colour palette
-    sns.heatmap(df_log, cmap=muted_pal, annot=True, fmt='.2g',square=True, cbar_kws={'label': 'log(count)'})  
+    sns.heatmap(df_log, cmap=muted_pal, annot=labels, fmt='.2g',square=True, cbar = False)  
 
     # Heatmap args in order:
     # - the logged data frame
