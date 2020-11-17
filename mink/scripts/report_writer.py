@@ -11,6 +11,9 @@ import datetime as dt
 import mutation_funcs as mfunk
 import mapping as map_funks
 
+import warnings
+warnings.filterwarnings("ignore")
+
 
 def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group):
     
@@ -113,8 +116,8 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
             fw.write(f'![]({figdir}/{snp}_counts.svg)')
             fw.write("\n\n")
         else:
-            fw.write("There are fewer than ten sequences with this SNP in this time period, so count and frequency plots are not displayed.\n\n")
             if len(snp_to_queries[snp]) > 0:
+                fw.write("There are fewer than ten sequences with this SNP in this time period, so count and frequency plots are not displayed.\n\n")
                 fw.write("The COG IDs and dates are:\n")
                 for query in snp_to_queries[snp]:
                     date = taxon_dict[query].date
@@ -122,6 +125,7 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
                         fw.write(f" - {query}\t{date}\n")
                     else:
                         fw.write(f" - {query}\n")
+                fw.write("\n")
 
         if len(snp_to_queries[snp]) > 0:
             if adm2_in_map:

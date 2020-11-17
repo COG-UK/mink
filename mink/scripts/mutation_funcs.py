@@ -13,6 +13,9 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
+import warnings
+warnings.filterwarnings("ignore")
+
 
 class taxon():
     
@@ -39,7 +42,7 @@ class taxon():
         
         if date == "None":
             self.date = "NA"
-        self.date_dt = self.make_date_object(date)
+        self.date = self.make_date_object(date)
        
     def sort_adm1(self, adm1_input):
         contract_dict = {"ENG":"England", "WLS": "Wales", "NIR": "Northern_Ireland", "SCT": "Scotland"}
@@ -94,7 +97,7 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
         for line in data:
             seq_name = line["query"]
             if seq_name in taxon_dict:
-                if taxon_dict[seq_name].date_dt >= date_start and taxon_dict[seq_name].date_dt <=date_end:
+                if taxon_dict[seq_name].date >= date_start and taxon_dict[seq_name].date <=date_end:
                     snps = line["variants"]
 
                     for snp in snps.split("|"):
@@ -125,7 +128,7 @@ def make_snp_table(snp_to_queries, taxon_dict, adm2_count_dict):
 
             for query in query_list:
                 if query in taxon_dict:
-                    dates.append(taxon_dict[query].date_dt)
+                    dates.append(taxon_dict[query].date)
 
             num_adm2s = len(adm2_count_dict[snp])
 
@@ -161,8 +164,8 @@ def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data
     ## Get total number of samples 
     all_dates = []
     for taxon in taxon_dict.values():
-        if taxon.date_dt != "NA":
-            all_dates.append(taxon.date_dt)
+        if taxon.date != "NA":
+            all_dates.append(taxon.date)
 
 
     total_df_dict = defaultdict(list)

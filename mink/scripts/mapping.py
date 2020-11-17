@@ -7,6 +7,9 @@ import geopandas
 import matplotlib.pyplot as plt
 from collections import Counter
 
+import warnings
+warnings.filterwarnings("ignore")
+
 def generate_all_uk_dataframe(mapping_input):
 
     uk_file = mapping_input[0]
