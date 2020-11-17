@@ -11,8 +11,8 @@ import datetime as dt
 import mutation_funcs as mfunk
 import mapping as map_funks
 
-import warnings
-warnings.filterwarnings("ignore")
+import logging
+logging.getLogger("imported_module").setLevel(logging.ERROR)
 
 
 def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group):
@@ -54,7 +54,7 @@ def process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_f
 
     return df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict
 
-def write_start_report(title, date_data, outdir):
+def write_start_report(title, date_data, snps, outdir):
 
     print("Writing the start of the report")
     
@@ -63,8 +63,23 @@ def write_start_report(title, date_data, outdir):
     fw = open(file_name, 'w')
 
     fw.write(f"# {title}\n")
-
+   
     fw.write(f'Date report run: {date_data} \n\n')
+
+    fw.write("### Contents\n\n")
+    if type(snps) == list:
+        for i in snps:
+            fw.write(f" - [{i}]({i})\n")
+    if type(snps) == defaultdict:
+        for group, snp_list in snps.items():
+            nice_group = group.replace("_"," ").title()
+            link_group = group.replace("_","-").lower()
+            fw.write(f" - [{nice_group}](#{link_group})\n")
+            for i in snp_list:
+                link_i = i.lower().replace(":","-")
+                fw.write(f"    - [{i}](#{link_i})\n")
+
+    fw.write("\n")
 
     return fw
 
@@ -104,7 +119,8 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
         
         adm2_in_map = adm2_perc_dict[snp]
         adm2_counts = adm2_count_dict[snp]
-        fw.write(f"### {snp}\n\n")
+        nice_snp = snp.replace(":"," ")
+        fw.write(f"### {nice_snp}\n\n")
 
         if len(snp_to_queries[snp]) > 10:
             small_snp_dict = defaultdict(list)
@@ -155,7 +171,7 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
 
 def generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, date_start, date_end, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title):
 
-    fw = write_start_report(title, date_data, outdir)     
+    fw = write_start_report(title, date_data, snps, outdir)     
 
     if type(snps) == list:
         print("detected list input for snps")

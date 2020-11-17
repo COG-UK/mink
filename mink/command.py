@@ -10,8 +10,8 @@ from collections import defaultdict
 import mapping as map_funks
 import report_writer as r_writer
 
-import warnings
-warnings.filterwarnings("ignore")
+import logging
+logging.getLogger("imported_module").setLevel(logging.ERROR)
 
 
 def main(sysargs = sys.argv[1:]):
