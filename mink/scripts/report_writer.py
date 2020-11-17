@@ -103,7 +103,7 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
         adm2_counts = adm2_count_dict[snp]
         fw.write(f"### {snp}\n\n")
 
-        if len(snp_to_queries[snp]) > 0:
+        if len(snp_to_queries[snp]) > 10:
             small_snp_dict = defaultdict(list)
             small_snp_dict[snp] = snp_to_dates[snp]
             mfunk.make_overall_lines(taxon_dict,small_snp_dict, snp_last_date, figdir_writing, raw_data_dir, snp, group)
@@ -112,8 +112,18 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
             fw.write("\n\n")
             fw.write(f'![]({figdir}/{snp}_counts.svg)')
             fw.write("\n\n")
+        else:
+            fw.write("There are fewer than ten sequences with this SNP in this time period, so count and frequency plots are not displayed.\n\n")
+            if len(snp_to_queries[snp]) > 0:
+                fw.write("The COG IDs and dates are:\n")
+                for query in snp_to_queries[snp]:
+                    date = taxon_dict[query].date
+                    if date != "NA":
+                        fw.write(f" - {query}\t{date}\n")
+                    else:
+                        fw.write(f" - {query}\n")
 
-
+        if len(snp_to_queries[snp]) > 0:
             if adm2_in_map:
                 sorted_adm2_in_map =  {k: v for k, v in sorted(adm2_in_map.items(), key=lambda item: item[1], reverse=True)}
                 fw.write(f"There are sequences with {snp} from {str(len(adm2_in_map))} admin2 regions\n")
@@ -139,14 +149,12 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
     return fw
 
 
-def generate_report(metadata_file, date_data, snp_file, snps, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title):
+def generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, date_start, date_end, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title):
 
     fw = write_start_report(title, date_data, outdir)     
 
     if type(snps) == list:
         print("detected list input for snps")
-        if not snps_for_matrix:
-            snps_for_matrix = snps
         group = "all_snps"
         description = ""
         snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
@@ -155,11 +163,10 @@ def generate_report(metadata_file, date_data, snp_file, snps, date_start, date_e
     elif type(snps) ==  defaultdict:
         print("detected input csv")
         for group, snp_list in snps.items():
-            if not snps_for_matrix:
-                snps_for_matrix = snp_list
+            snps_for_matrix_actual = snps_for_matrix[group]
             group = group.replace(" ","_")
             description = group_descriptions[group]
-            snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
+            snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix_actual, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
             fw = write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict, description, group)
 
     fw.close()

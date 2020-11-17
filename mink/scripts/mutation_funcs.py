@@ -339,7 +339,7 @@ def make_heatmap(snps, query_to_snps, figdir, group):
     # - square layout of the heatmap
     # - cbar_kws customises the heatmap on the side
 
-    plt.savefig(f"{figdir}/pairwise_cooccurance_{group}.svg", format="svg")
+    plt.savefig(f"{figdir}/pairwise_cooccurance_{group}.svg", format="svg", bbox_inches="tight")
 
     plt.close()
 

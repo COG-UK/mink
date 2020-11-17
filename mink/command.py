@@ -51,7 +51,6 @@ def main(sysargs = sys.argv[1:]):
     snp_file = args.snp_file
     figdir = args.figdir
     raw_data_dir = args.raw_data_dir
-    snps_for_matrix = args.snps_for_matrix
     outdir = args.outdir
     date_start = args.date_start
     date_end = args.date_end
@@ -78,9 +77,6 @@ def main(sysargs = sys.argv[1:]):
     if not os.path.exists(raw_data_dir):
         os.mkdir(raw_data_dir)
 
-    if not snps_for_matrix:
-        snps_for_matrix = snp_list
-
     if args.date_start:
         date_start = dt.datetime.strptime(args.date_start,"%Y-%m-%d").date()
     else:
@@ -103,32 +99,36 @@ def main(sysargs = sys.argv[1:]):
     group_descriptions = {}
     if snp_csv:
         snps = defaultdict(list)
+        snps_for_matrix = defaultdict(list)
         with open(snp_csv) as f:
             r = csv.DictReader(f)
             data = [i for i in r]
             for line in data:
-                
                 snp_list = line["snps"].split(";")
                 group = line["group"]
-                
-                snps[group] = snp_list
+                snps[group] = snp_list 
                 
                 try:
                     description = line["description"]
                 except:
                     description = ""
+                
+                try:
+                    snps_for_matrix_list = line["snps_for_matrix"].split(";")
+                except:
+                    snps_for_matrix_list = snp_list
 
                 group_descriptions[group] = description
+                snps_for_matrix[group] = snps_for_matrix_list
     
     elif snp_list:
         snps = snp_list.split(",")
+        if type(args.snps_for_matrix) == str:
+            snps_for_matrix = snps_for_matrix.split(",")
+        else:
+            snps_for_matrix = snps
 
-    if type(snps_for_matrix) == str:
-        snps_for_matrix = snps_for_matrix.split(",")
-    else:
-        snps_for_matrix = None
-
-    r_writer.generate_report(metadata_file, date_data, snp_file, snps, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title)
+    r_writer.generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, date_start, date_end, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title)
 
 if __name__ == '__main__':
     main()
