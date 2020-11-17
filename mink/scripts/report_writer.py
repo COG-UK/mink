@@ -65,15 +65,19 @@ def write_report(outdir, date_data, figdir, figdir_writing, raw_data_dir, snp_df
     fw.write(snp_df.to_markdown())
     fw.write("\n\n")
 
-    fw.write("## SNP summaries\n")
     fw.write("### COG-UK amino acid variants by date\n\n")
 
-    fw.write(f'![]({figdir}/all_snps_line.svg)')
+    fw.write(f'![]({figdir}/all_snps_frequencies.svg)')
+    fw.write("\n\n")
+    fw.write(f'![]({figdir}/all_snps_counts.svg)')
     fw.write("\n\n")
 
     fw.write("### Co-occurence matrix\n\n")
 
     fw.write(f'![]({figdir}/pairwise_cooccurance.svg)')
+    fw.write("\n\n")
+
+    fw.write("## SNP summaries")
     fw.write("\n\n")
 
     for snp in snp_list:
@@ -87,8 +91,11 @@ def write_report(outdir, date_data, figdir, figdir_writing, raw_data_dir, snp_df
             small_snp_dict[snp] = snp_to_dates[snp]
             mfunk.make_overall_lines(taxon_dict,small_snp_dict, snp_last_date, figdir_writing, raw_data_dir, snp)
 
-            fw.write(f'![]({figdir}/{snp}_line.svg)')
+            fw.write(f'![]({figdir}/{snp}_frequencies.svg)')
             fw.write("\n\n")
+            fw.write(f'![]({figdir}/{snp}_counts.svg)')
+            fw.write("\n\n")
+
 
             if adm2_in_map:
                 sorted_adm2_in_map =  {k: v for k, v in sorted(adm2_in_map.items(), key=lambda item: item[1], reverse=True)}

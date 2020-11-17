@@ -217,7 +217,11 @@ def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data
                 day_dict[day] = 0
             
             snp_dict[snp] = day_dict
+   
+        plot_frequencies(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp)
+        plot_counts(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp)
 
+def plot_frequencies(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp):
 
     ## Divide snp seqs by total number of seqs 
     new_snp_dict = defaultdict(dict)
@@ -237,12 +241,28 @@ def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data
         new_dict_sorted = OrderedDict(sorted(new_dict.items()))
         new_snp_dict[snp] = new_dict_sorted
 
-    print(new_snp_dict)
+        plot_lines(new_snp_dict, figdir, focal_snp, "Frequency of SNP (7 day rolling average", "frequencies")
+
+def plot_counts(snp_dict, figdir, total_day_dict, snp_last_date, focal_snp):
+     
+    new_snp_dict = defaultdict(dict)
+
+    for snp, dictionary in snp_dict.items():
+        new_dict = dictionary.copy()
+    
+        for days in total_day_dict.keys():
+                if days not in new_dict and days < snp_last_date[snp]:
+                    new_dict[days] = 0
+
+        new_snp_dict[snp] = OrderedDict(sorted(new_dict.items()))
+
+    plot_lines(new_snp_dict, figdir, focal_snp, "Counts of sequences with SNP", "counts")
+
+def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile):
 
     plt.rc('xtick',labelsize=20)
     plt.rc('ytick',labelsize=20)
         
-
     fig, ax = plt.subplots(1,1,figsize=(30,10))
     used_ys = []
     for snp, dictionary in new_snp_dict.items():
@@ -267,14 +287,13 @@ def make_overall_lines(taxon_dict, snp_to_dates, snp_last_date, figdir, raw_data
         
         
     ax.legend(fontsize=20)
-    ax.set_ylabel("Frequency of SNP (7 day rolling average)", fontsize=20)
+    ax.set_ylabel(title, fontsize=20)
     ax.set_xlabel("Date", fontsize=20)
 
     if not focal_snp:
-        plt.savefig(f"{figdir}/all_snps_line.svg", format='svg')
+        plt.savefig(f"{figdir}/all_snps_{savefile}.svg", format='svg')
     else:
-        plt.savefig(f"{figdir}/{focal_snp}_line.svg", format='svg')
-
+        plt.savefig(f"{figdir}/{focal_snp}_{savefile}.svg", format='svg')
 
 
 def make_heatmap(snps, query_to_snps, figdir):
