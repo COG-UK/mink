@@ -164,6 +164,7 @@ def make_map(centroid_geo, all_uk, figdir, snp):
     ax.axis("off")
 
     plt.savefig(f'{figdir}/{snp}_map.svg', format="svg")
+    plt.close()
 
 
 

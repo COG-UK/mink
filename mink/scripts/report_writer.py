@@ -75,7 +75,7 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
     else:
         nice_group = group.replace("_"," ").title()
         fw.write(f"## {nice_group}\n\n")
-        fw.write("### Summaries")
+        fw.write("### Summaries\n\n")
     
     if description != "":
         nice_des = description.strip('"')

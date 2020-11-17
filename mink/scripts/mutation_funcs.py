@@ -295,6 +295,8 @@ def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile, group):
     else:
         plt.savefig(f"{figdir}/{focal_snp}_{savefile}.svg", format='svg')
 
+    plt.close()
+
 
 def make_heatmap(snps, query_to_snps, figdir, group):
 
@@ -338,5 +340,7 @@ def make_heatmap(snps, query_to_snps, figdir, group):
     # - cbar_kws customises the heatmap on the side
 
     plt.savefig(f"{figdir}/pairwise_cooccurance_{group}.svg", format="svg")
+
+    plt.close()
 
 
