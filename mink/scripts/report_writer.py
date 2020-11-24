@@ -76,7 +76,7 @@ def quick_parse(snps, snp_file):
                             group_to_snps[group].add(ide)
 
             if type(snps) == list:
-                for snp in snp_list:
+                for snp in snps:
                     identified_snps = re.findall(snp, snps_in_file)
                     for ide in identified_snps:
                         group_to_snps["all_snps"].add(ide)
@@ -112,10 +112,14 @@ def write_start_report(title, date_data, snps, snp_file, outdir):
         if group != "all_snps":
             nice_group = group.replace("_"," ").title()
             link_group = group.replace("_","-").lower()
-            fw.write(f" - [{nice_group}](#{link_group})\n")
-        for i in snp_list:
-            link_i = i.lower().replace(":","-")
-            fw.write(f"    - [{i}](#{link_i})\n")
+            fw.write(f"- [{nice_group}](#{link_group})\n")
+            for i in snp_list:
+                link_i = i.lower().replace(":","-")
+                fw.write(f"    - [{i}](#{link_i})\n")
+        else:
+            for i in snp_list:
+                link_i = i.lower().replace(":","-")
+                fw.write(f"- [{i}](#{link_i})\n")
 
     fw.write("\n")
 
@@ -214,7 +218,7 @@ def generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, d
         print("detected list input for snps")
         group = "all_snps"
         description = ""
-        snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict, snp_list, regex_to_query = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
+        snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict, snp_list, regex_to_query = process_data(metadata_file, snp_file, snps, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
         fw = write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict, description, group)
 
     elif type(snps) ==  defaultdict:
