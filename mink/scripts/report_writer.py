@@ -88,7 +88,7 @@ def quick_parse(snps, snp_file):
                 if i not in group_to_snps[group] and "." not in i:
                     group_to_snps[group].add(i)
     else:
-        for i in snp_list:
+        for i in snps:
             if i not in group_to_snps["all_snps"] and "." not in i:
                 group_to_snps["all_snps"].add(i)
 

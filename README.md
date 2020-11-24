@@ -46,6 +46,8 @@ options:
                 CSV file containing sequence name and all snps found in that sequence
 --snp-list SNP-LIST
                 Comma separated string containing SNPs of interest that the report will be run on
+--snp-csv SNP-CSV
+                CSV file as alternative to SNP-LIST containing groups of SNPs of interest. 
 --snps-for-matrix SNPs
                 Comma separated string containing SNPs for pairwise co-occurrence matrix figure. Default is the full SNP list.
 --date-data DATE
