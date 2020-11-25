@@ -89,7 +89,7 @@ def main(sysargs = sys.argv[1:]):
     if args.date_end:
         date_end = dt.datetime.strptime(args.date_end,"%Y-%m-%d").date()
     else:
-        date_end = dt.date.today()
+        date_end = mfunks.find_mrd(snp_file) #by default find the most recent date in the dataset
 
 
     uk = pkg_resources.resource_filename('mink', 'data/mapping_files/gadm36_GBR_2.json')
@@ -153,7 +153,7 @@ def main(sysargs = sys.argv[1:]):
 
     if flag_fastest:
         print("Finding fastest growing changes")
-        fastest = mfunks.find_fastest_growing(snp_file)
+        fastest = mfunks.find_fastest_growing(snp_file, date_end)
         snps["Fastest_growers"] = fastest
         snps_for_matrix["Fastest_growers"] = fastest
         group_descriptions["Fastest_growers"] = "Amino acid changes with the highest growth rate in the thirty days preceeding the most recent sample"

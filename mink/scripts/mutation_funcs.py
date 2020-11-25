@@ -89,10 +89,24 @@ def find_top_ten(snp_file): #not used at the moment, but leave in for now
 
     return snps
 
+def find_mrd(snp_file):
 
-def find_fastest_growing(snp_file):
+    dates = []
 
-    end_date = dt.date(2020,11,20) #wants to be most recent date in dataset
+    with open(snp_file) as f:
+        reader = csv.DictReader(f)
+        data = [r for r in reader]
+        for line in data:   
+            date_dt = dt.datetime.strptime(line["sample_date"], "%Y-%m-%d").date()
+            dates.append(date_dt)
+
+    most_recent_date = sorted(dates, reverse=True)[0]
+
+    return most_recent_date
+
+
+def find_fastest_growing(snp_file, date_end):
+
     snp_now = []
     snp_month_ago = []
 
@@ -111,7 +125,7 @@ def find_fastest_growing(snp_file):
             
             for i in snps:
                 snp_now.append(i)
-                if date_dt < (end_date - dt.timedelta(days=30)):
+                if date_dt < (date_end - dt.timedelta(days=30)):
                     snp_month_ago.append(i)
                 
     snp_present = Counter(snp_now)
@@ -133,8 +147,6 @@ def find_fastest_growing(snp_file):
             fastest.append(i)
         else:
             break
-        
-
 
 def parse_metadata(metadata_file):
 
