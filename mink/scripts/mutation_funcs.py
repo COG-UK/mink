@@ -200,12 +200,12 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
             if seq_name in taxon_dict:
                 if taxon_dict[seq_name].date >= date_start and taxon_dict[seq_name].date <=date_end:
                     snps = line["variants"]
-
                     for snp in snp_list:
-                        if "*" not in snp:
-                            identified_snps = re.findall(snp, snps)
-                        else:
-                            identified_snps = [snp]
+                        if "*" in snp:
+                            snp = snp.replace("*", "\*")
+                        
+                        identified_snps = re.findall(snp, snps)
+
                         for ide in identified_snps:
                             query_to_snps[seq_name].append(ide)
                             snp_to_queries[ide].append(seq_name)

@@ -70,10 +70,11 @@ def quick_parse(snps, snp_file):
 
             for group, snp_list in snps.items():
                 for snp in snp_list:
-                    if "*" not in snp:
-                        identified_snps = re.findall(snp, snps_in_file)
-                    else:
-                        identified_snps = [snp]
+                    if "*" in snp:
+                        snp = snp.replace("*", "\*")
+                    
+                    identified_snps = re.findall(snp, snps_in_file)
+                
                     for ide in identified_snps:
                         group_to_snps[group].add(ide)
 
