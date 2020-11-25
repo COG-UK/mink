@@ -68,35 +68,22 @@ def quick_parse(snps, snp_file):
             seq_name = line["query"]
             snps_in_file = line["variants"]        
 
-            if type(snps) == defaultdict:
-                for group, snp_list in snps.items():
-                    for snp in snp_list:
-                        identified_snps = re.findall(snp, snps_in_file)
-                        for ide in identified_snps:
-                            group_to_snps[group].add(ide)
-
-            if type(snps) == list:
-                for snp in snps:
+            for group, snp_list in snps.items():
+                for snp in snp_list:
                     identified_snps = re.findall(snp, snps_in_file)
                     for ide in identified_snps:
-                        group_to_snps["all_snps"].add(ide)
+                        group_to_snps[group].add(ide)
 
-    #I'm sure I can fix this and make it neater
-    if type(snps) == defaultdict:
-        for group, snp_list in snps.items():
-            for i in snp_list:
-                if i not in group_to_snps[group] and "." not in i:
-                    group_to_snps[group].add(i)
-    else:
-        for i in snps:
-            if i not in group_to_snps["all_snps"] and "." not in i:
-                group_to_snps["all_snps"].add(i)
+    for group, snp_list in snps.items():
+        for i in snp_list:
+            if i not in group_to_snps[group] and "." not in i:
+                group_to_snps[group].add(i)
 
     group_to_snps = OrderedDict(sorted(group_to_snps.items()))
 
     return group_to_snps
 
-def write_start_report(title, date_data, snps, snp_file, outdir):
+def write_start_report(title, date_data, snps, snp_file, outdir, just_one):
 
     print("Writing the start of the report")
 
@@ -108,27 +95,27 @@ def write_start_report(title, date_data, snps, snp_file, outdir):
 
     print("finding regexed snps")
     group_to_snps = quick_parse(snps, snp_file)
-    for group, snp_list in group_to_snps.items():
-        if group != "all_snps":
+    if just_one:
+        for i in snp_list:
+            link_i = i.lower().replace(":","-")
+            fw.write(f" - [{i}](#{link_i})\n")
+    else:
+        for group, snp_list in group_to_snps.items():
             nice_group = group.replace("_"," ").title()
             link_group = group.replace("_","-").lower()
             fw.write(f"- [{nice_group}](#{link_group})\n")
             for i in snp_list:
                 link_i = i.lower().replace(":","-")
                 fw.write(f"    - [{i}](#{link_i})\n")
-        else:
-            for i in snp_list:
-                link_i = i.lower().replace(":","-")
-                fw.write(f"- [{i}](#{link_i})\n")
 
     fw.write("\n")
 
     return fw
 
-def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date,taxon_dict, description, group):
+def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date,taxon_dict, description, group, just_one):
     
-    if group == "all_snps":
-        fw.write("## SNP summaries\n\n")
+    if just_one:
+        fw.write("## Amino acid change summaries\n\n")
     else:
         nice_group = group.replace("_"," ").title()
         fw.write(f"## {nice_group}\n\n")
@@ -172,7 +159,7 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
             fw.write("\n\n")
         else:
             if len(snp_to_queries[snp]) > 0:
-                fw.write("There are fewer than ten sequences with this SNP in this time period, so count and frequency plots are not displayed.\n\n")
+                fw.write("There are fewer than ten sequences with this genetic change in this time period, so count and frequency plots are not displayed.\n\n")
                 fw.write("The COG IDs and dates are:\n")
                 for query in snp_to_queries[snp]:
                     date = taxon_dict[query].date
@@ -201,7 +188,7 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
                 fw.write(f'![]({figdir}/{snp}_map.svg)')
                 fw.write("\n\n")
             else:
-                fw.write("There is no geographical data for this SNP\n\n")
+                fw.write("There is no geographical data for this genetic change\n\n")
         else:
             fw.write("This snp was not observed in this time period\n\n")
 
@@ -210,26 +197,21 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
 
 def generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, date_start, date_end, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title):
 
-    #probably make snps a dictionary always and key the list by "all_snps" or something 
+    snps = OrderedDict(sorted(snps.items()))
 
-    fw = write_start_report(title, date_data, snps, snp_file, outdir)     
+    if len(snps) == 1:
+        just_one = True
+    else:
+        just_one = False
 
-    if type(snps) == list:
-        print("detected list input for snps")
-        group = "all_snps"
-        description = ""
-        snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict, snp_list, regex_to_query = process_data(metadata_file, snp_file, snps, date_start, date_end, snps_for_matrix, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
-        fw = write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict, description, group)
+    fw = write_start_report(title, date_data, snps, snp_file, outdir, just_one)     
 
-    elif type(snps) ==  defaultdict:
-        print("detected input csv")
-        snps = OrderedDict(sorted(snps.items()))
-        for group, snp_list in snps.items():
-            snps_for_matrix_actual = snps_for_matrix[group]
-            group = group.replace(" ","_")
-            description = group_descriptions[group]
-            snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict, snp_list, regex_to_query = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix_actual, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
-            fw = write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict, description, group)
+    for group, snp_list in snps.items():
+        snps_for_matrix_actual = snps_for_matrix[group]
+        group = group.replace(" ","_")
+        description = group_descriptions[group]
+        snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict, snp_list, regex_to_query = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix_actual, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
+        fw = write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict, description, group, just_one)
 
     fw.close()
     

@@ -9,6 +9,7 @@ from collections import defaultdict
 
 import mapping as map_funks
 import report_writer as r_writer
+import mutation_funcs as mfunks
 
 import logging
 logging.getLogger("imported_module").setLevel(logging.ERROR)
@@ -100,9 +101,10 @@ def main(sysargs = sys.argv[1:]):
     all_uk = map_funks.generate_all_uk_dataframe(map_files)
 
     group_descriptions = {}
+    snps = defaultdict(list)
+    snps_for_matrix = defaultdict(list)
     if snp_csv:
-        snps = defaultdict(list)
-        snps_for_matrix = defaultdict(list)
+        print("Detected input csv")
         with open(snp_csv) as f:
             r = csv.DictReader(f)
             data = [i for i in r]
@@ -131,19 +133,30 @@ def main(sysargs = sys.argv[1:]):
                 group_descriptions[group] = description
                 snps_for_matrix[group] = snps_for_matrix_list
     
-    elif snp_list:
+    elif snp_list: 
+        print("Detected command line input")
         snps = snp_list.split(",")
         new_snp_list = []
         for i in snp_list:
             if i[-1].isdigit():
                 i += "."
             new_snp_list.append(i)
-        snp_list = new_snp_list
-
+        
         if type(args.snps_for_matrix) == str:
-            snps_for_matrix = snps_for_matrix.split(",")
+            snps_for_matrix_list = snps_for_matrix.split(",")
         else:
-            snps_for_matrix = None
+            snps_for_matrix_list = None
+
+        snps["genetic_changes_of_interest"] = new_snp_list
+        snps_for_matrix["genetic_changes_of_interest"] = snps_for_matrix_list
+
+
+    if flag_fastest:
+        print("Finding fastest growing changes")
+        fastest = mfunks.find_fastest_growing(snp_file)
+        snps["Fastest_growers"] = fastest
+        snps_for_matrix["Fastest_growers"] = fastest
+        group_descriptions["Fastest_growers"] = "Amino acid changes with the highest growth rate in the thirty days preceeding the most recent sample"
 
     r_writer.generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, date_start, date_end, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title)
 

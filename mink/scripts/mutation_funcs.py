@@ -63,6 +63,78 @@ class taxon():
             date = "NA"
         return date
 
+def find_top_ten(snp_file): #not used at the moment, but leave in for now
+
+    snp_list = []
+    snps = []
+
+    with open(snp_file) as f:
+    reader = csv.DictReader(f)
+    data = [r for r in reader]
+    for line in data:
+        seq_name = line["sequence_name"]
+        snps = line["variants"].split("|")
+        date = line["sample_date"]
+        date_dt = dt.datetime.strptime(date, "%Y-%m-%d").date()
+        
+        if date_dt > (end_date - dt.timedelta(days=7)):
+            for i in snps:
+                snp_list.append(i)
+
+    snp_counter = Counter(snp_list)
+    most_commons = snp_counter.most_common(10)
+    ten_new_ones = []
+    for i in most_commons:
+        ten_new_ones.append(i[0])
+
+    return snps
+
+
+def find_fastest_growing(snp_file):
+
+    end_date = dt.date(2020,11,20) #wants to be most recent date in dataset
+    snp_now = []
+    snp_month_ago = []
+
+    snp_past = {}
+    snp_present = {}
+    snp_rate = {}
+
+    with open(snp_file) as f:
+        reader = csv.DictReader(f)
+        data = [r for r in reader]
+        for line in data:
+            seq_name = line["sequence_name"]
+            snps = line["variants"].split("|")
+            date = line["sample_date"]
+            date_dt = dt.datetime.strptime(date, "%Y-%m-%d").date()
+            
+            for i in snps:
+                snp_now.append(i)
+                if date_dt < (end_date - dt.timedelta(days=30)):
+                    snp_month_ago.append(i)
+                
+    snp_present = Counter(snp_now)
+    snp_past = Counter(snp_month_ago)
+
+    for snp in snp_present:
+        past = snp_past[snp] + 1
+        present = snp_present[snp] + 1 #pseudocount to deal with zeroes
+        rate = (present-past)/past
+        snp_rate[snp] = rate
+
+    ordered = {k: v for k, v in sorted(snp_rate.items(), key=lambda item: item[1], reverse=True)}
+
+    fastest = []
+    count = 0
+    for i in ordered:
+        count += 1
+        if count < 10:
+            fastest.append(i)
+        else:
+            break
+        
+
 
 def parse_metadata(metadata_file):
 
@@ -98,7 +170,7 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
         reader = csv.DictReader(f)
         data = [r for r in reader]
         for line in data:
-            seq_name = line["query"]
+            seq_name = line["sequence_name"]
             if seq_name in taxon_dict:
                 if taxon_dict[seq_name].date >= date_start and taxon_dict[seq_name].date <=date_end:
                     snps = line["variants"]
