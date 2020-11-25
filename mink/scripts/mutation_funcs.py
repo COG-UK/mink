@@ -69,17 +69,17 @@ def find_top_ten(snp_file): #not used at the moment, but leave in for now
     snps = []
 
     with open(snp_file) as f:
-    reader = csv.DictReader(f)
-    data = [r for r in reader]
-    for line in data:
-        seq_name = line["sequence_name"]
-        snps = line["variants"].split("|")
-        date = line["sample_date"]
-        date_dt = dt.datetime.strptime(date, "%Y-%m-%d").date()
-        
-        if date_dt > (end_date - dt.timedelta(days=7)):
-            for i in snps:
-                snp_list.append(i)
+        reader = csv.DictReader(f)
+        data = [r for r in reader]
+        for line in data:
+            seq_name = line["sequence_name"]
+            snps = line["variants"].split("|")
+            date = line["sample_date"]
+            date_dt = dt.datetime.strptime(date, "%Y-%m-%d").date()
+            
+            if date_dt > (end_date - dt.timedelta(days=7)):
+                for i in snps:
+                    snp_list.append(i)
 
     snp_counter = Counter(snp_list)
     most_commons = snp_counter.most_common(10)
@@ -147,6 +147,8 @@ def find_fastest_growing(snp_file, date_end):
             fastest.append(i)
         else:
             break
+
+    return fastest
 
 def parse_metadata(metadata_file):
 

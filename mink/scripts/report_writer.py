@@ -65,7 +65,7 @@ def quick_parse(snps, snp_file):
         reader = csv.DictReader(f)
         data = [r for r in reader]
         for line in data:
-            seq_name = line["query"]
+            seq_name = line["sequence_name"]
             snps_in_file = line["variants"]        
 
             for group, snp_list in snps.items():
@@ -95,18 +95,29 @@ def write_start_report(title, date_data, snps, snp_file, outdir, just_one):
 
     print("finding regexed snps")
     group_to_snps = quick_parse(snps, snp_file)
+
+    if "genetic_changes_of_interest" in group_to_snps and not just_one:
+        nice_group = "Genetic changes of interest"
+        link_group = "genetic-changes-of-interest"
+        fw.write(f"- [{nice_group}](#{link_group})\n")
+        snp_list = group_to_snps["genetic_changes_of_interest"]
+        for i in snp_list:
+            link_i = i.lower().replace(":","-")
+            fw.write(f"    - [{i}](#{link_i})\n")
+
     if just_one:
         for i in snp_list:
             link_i = i.lower().replace(":","-")
             fw.write(f" - [{i}](#{link_i})\n")
     else:
         for group, snp_list in group_to_snps.items():
-            nice_group = group.replace("_"," ").title()
-            link_group = group.replace("_","-").lower()
-            fw.write(f"- [{nice_group}](#{link_group})\n")
-            for i in snp_list:
-                link_i = i.lower().replace(":","-")
-                fw.write(f"    - [{i}](#{link_i})\n")
+            if group != "genetic_changes_of_interest":
+                nice_group = group.replace("_"," ").title()
+                link_group = group.replace("_","-").lower()
+                fw.write(f"- [{nice_group}](#{link_group})\n")
+                for i in snp_list:
+                    link_i = i.lower().replace(":","-")
+                    fw.write(f"    - [{i}](#{link_i})\n")
 
     fw.write("\n")
 
@@ -206,12 +217,22 @@ def generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, d
 
     fw = write_start_report(title, date_data, snps, snp_file, outdir, just_one)     
 
-    for group, snp_list in snps.items():
+    if "genetic_changes_of_interest" in snps: #so it's always first
+        group = "genetic_changes_of_interest"
+        snp_list = snps[group]
         snps_for_matrix_actual = snps_for_matrix[group]
         group = group.replace(" ","_")
         description = group_descriptions[group]
         snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict, snp_list, regex_to_query = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix_actual, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
         fw = write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict, description, group, just_one)
+
+    for group, snp_list in snps.items():
+        if group != "genetic_changes_of_interest":
+            snps_for_matrix_actual = snps_for_matrix[group]
+            group = group.replace(" ","_")
+            description = group_descriptions[group]
+            snp_df, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates, snp_last_date, taxon_dict, snp_list, regex_to_query = process_data(metadata_file, snp_file, snp_list, date_start, date_end, snps_for_matrix_actual, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group)
+            fw = write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_list, adm2_perc_dict, adm2_count_dict, snp_to_queries, snp_to_dates,snp_last_date, taxon_dict, description, group, just_one)
 
     fw.close()
     

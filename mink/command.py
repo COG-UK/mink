@@ -137,7 +137,7 @@ def main(sysargs = sys.argv[1:]):
     
     elif snp_list: 
         print("Detected command line input")
-        snps = snp_list.split(",")
+        snp_list = snp_list.split(",")
         new_snp_list = []
         for i in snp_list:
             if i[-1].isdigit():
@@ -151,6 +151,7 @@ def main(sysargs = sys.argv[1:]):
 
         snps["genetic_changes_of_interest"] = new_snp_list
         snps_for_matrix["genetic_changes_of_interest"] = snps_for_matrix_list
+        group_descriptions["genetic_changes_of_interest"] = ""
 
 
     if flag_fastest:
