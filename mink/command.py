@@ -158,10 +158,16 @@ def main(sysargs = sys.argv[1:]):
 
     if flag_fastest:
         print("Finding fastest growing changes")
-        fastest = mfunks.find_fastest_growing(snp_file, date_end)
+        fastest, already_in = mfunks.find_fastest_growing(snp_file, date_end, snps)
         snps["Fastest_growers"] = fastest
         snps_for_matrix["Fastest_growers"] = fastest
-        group_descriptions["Fastest_growers"] = "Amino acid changes with the highest growth rate in the thirty days preceeding the most recent sample"
+        if len(already_in) == 1:
+            group_descriptions["Fastest_growers"] = f"Amino acid changes with the highest growth rate in the thirty days preceeding the most recent sample. {already_in[0]} is in other groups, and so won't be shown twice."
+        elif len(already_in) > 1:
+            a = ", ".join(already_in)
+            group_descriptions["Fastest_growers"] = f"Amino acid changes with the highest growth rate in the thirty days preceeding the most recent sample. {a} are in other groups, and so won't be shown twice."
+        else:
+            group_descriptions["Fastest_growers"] = f"Amino acid changes with the highest growth rate in the thirty days preceeding the most recent sample."
 
     r_writer.generate_report(metadata_file, date_data, snp_file, snps, snps_for_matrix, date_start, date_end, figdir_writing, figdir, outdir, raw_data_dir, all_uk, group_descriptions, title)
 

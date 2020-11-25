@@ -105,7 +105,7 @@ def find_mrd(snp_file):
     return most_recent_date
 
 
-def find_fastest_growing(snp_file, date_end):
+def find_fastest_growing(snp_file, date_end, snp_dict):
 
     snp_now = []
     snp_month_ago = []
@@ -144,11 +144,23 @@ def find_fastest_growing(snp_file, date_end):
     for i in ordered:
         count += 1
         if count < 10:
-            fastest.append(i.replace("*","."))
+            fastest.append(i)
         else:
             break
 
-    return fastest
+    final_fastest = []
+    ones_already_included = []
+    for i in fastest:
+        include = True
+        for snp_values in snp_dict.values():
+            if i in snp_values:
+                include = False
+        if include:
+            final_fastest.append(i)
+        else:
+            ones_already_included.append(i)
+
+    return final_fastest, ones_already_included
 
 def parse_metadata(metadata_file):
 
@@ -190,7 +202,10 @@ def parse_snp_data(snp_file, snp_list, taxon_dict, date_start, date_end):
                     snps = line["variants"]
 
                     for snp in snp_list:
-                        identified_snps = re.findall(snp, snps)
+                        if "*" not in snp:
+                            identified_snps = re.findall(snp, snps)
+                        else:
+                            identified_snps = [snp]
                         for ide in identified_snps:
                             query_to_snps[seq_name].append(ide)
                             snp_to_queries[ide].append(seq_name)

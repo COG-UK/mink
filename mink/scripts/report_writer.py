@@ -70,7 +70,10 @@ def quick_parse(snps, snp_file):
 
             for group, snp_list in snps.items():
                 for snp in snp_list:
-                    identified_snps = re.findall(snp, snps_in_file)
+                    if "*" not in snp:
+                        identified_snps = re.findall(snp, snps_in_file)
+                    else:
+                        identified_snps = [snp]
                     for ide in identified_snps:
                         group_to_snps[group].add(ide)
 
@@ -102,7 +105,7 @@ def write_start_report(title, date_data, snps, snp_file, outdir, just_one):
         fw.write(f"- [{nice_group}](#{link_group})\n")
         snp_list = group_to_snps["genetic_changes_of_interest"]
         for i in snp_list:
-            link_i = i.lower().replace(":","-")
+            link_i = i.lower().replace(":","-").replace("*","")
             fw.write(f"    - [{i}](#{link_i})\n")
 
     if just_one:
@@ -116,7 +119,7 @@ def write_start_report(title, date_data, snps, snp_file, outdir, just_one):
                 link_group = group.replace("_","-").lower()
                 fw.write(f"- [{nice_group}](#{link_group})\n")
                 for i in snp_list:
-                    link_i = i.lower().replace(":","-")
+                    link_i = i.lower().replace(":","-").replace("*","")
                     fw.write(f"    - [{i}](#{link_i})\n")
 
     fw.write("\n")
