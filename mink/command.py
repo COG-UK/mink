@@ -118,6 +118,8 @@ def main(sysargs = sys.argv[1:]):
                 for i in snp_list:
                     if i[-1].isdigit():
                         i += "."
+                    elif "*" in i:
+                        i.replace("*",".")
                     new_snp_list.append(i)
 
                 snps[group] = new_snp_list 

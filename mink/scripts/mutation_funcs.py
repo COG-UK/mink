@@ -144,7 +144,7 @@ def find_fastest_growing(snp_file, date_end):
     for i in ordered:
         count += 1
         if count < 10:
-            fastest.append(i)
+            fastest.append(i.replace("*","."))
         else:
             break
 
