@@ -33,6 +33,7 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument("--date-start", dest = "date_start", help="restrict analysis to this date at the earliest")
     parser.add_argument("--date-end", dest="date_end", help="restrict analysis to this date at the latest")
     parser.add_argument("--title", dest="title", default="Mutation report", help="report title")
+    parser.add_argument("--flag-fastest", dest="flag_fastest", action="store_true", help="find the ten fastest growing genetic changes")
     
     parser.add_argument("-h","--help", action="store_true", dest="help")
 
@@ -59,6 +60,7 @@ def main(sysargs = sys.argv[1:]):
     date_start = args.date_start
     date_end = args.date_end
     title = args.title
+    flag_fastest = args.flag_fastest
 
     snp_list = args.snp_list
     snp_csv = args.snp_csv
