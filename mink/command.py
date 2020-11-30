@@ -76,6 +76,7 @@ def main(sysargs = sys.argv[1:]):
 
     if not os.path.exists(figdir_writing):
         os.mkdir(figdir_writing)
+    os.mkdir(os.path.join(figdir_writing,"svg_figures"))
 
     if outdir not in raw_data_dir:
         raw_data_dir = os.path.join(outdir,raw_data_dir)

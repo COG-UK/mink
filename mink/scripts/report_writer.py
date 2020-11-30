@@ -144,16 +144,16 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
     fw.write("\n\n")
 
     fw.write("> Rolling seven day average of SNP frequency over time\n\n")
-    fw.write(f'![]({figdir}/{group}_frequencies.svg)')
+    fw.write(f'![]({figdir}/{group}_frequencies.png)')
     fw.write("\n\n")
     
     fw.write("> Rolling seven day average of SNP counts over time\n\n")
-    fw.write(f'![]({figdir}/{group}_counts.svg)')
+    fw.write(f'![]({figdir}/{group}_counts.png)')
     fw.write("\n\n")
 
     fw.write("> Co-occurence matrix\n\n")
 
-    fw.write(f'![]({figdir}/pairwise_cooccurance_{group}.svg)')
+    fw.write(f'![]({figdir}/pairwise_cooccurance_{group}.png)')
     fw.write("\n\n")
 
     for snp in snp_list:
@@ -168,9 +168,9 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
             small_snp_dict[snp] = snp_to_dates[snp]
             mfunk.make_overall_lines(taxon_dict,small_snp_dict, snp_last_date, figdir_writing, raw_data_dir, snp, group)
 
-            fw.write(f'![]({figdir}/{snp}_frequencies.svg)')
+            fw.write(f'![]({figdir}/{snp}_frequencies.png)')
             fw.write("\n\n")
-            fw.write(f'![]({figdir}/{snp}_counts.svg)')
+            fw.write(f'![]({figdir}/{snp}_counts.png)')
             fw.write("\n\n")
         else:
             if len(snp_to_queries[snp]) > 0:
@@ -200,7 +200,7 @@ def write_snp_sections(fw, figdir, figdir_writing, raw_data_dir, snp_df, snp_lis
                         count += 1
                 
                 fw.write("\n")
-                fw.write(f'![]({figdir}/{snp}_map.svg)')
+                fw.write(f'![]({figdir}/{snp}_map.png)')
                 fw.write("\n\n")
             else:
                 fw.write("There is no geographical data for this genetic change\n\n")

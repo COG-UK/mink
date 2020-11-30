@@ -402,9 +402,11 @@ def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile, group):
     ax.set_xlabel("Date", fontsize=20)
 
     if not focal_snp:
-        plt.savefig(f"{figdir}/{group}_{savefile}.svg", format='svg')
+        plt.savefig(f"{figdir}/svg_figures/{group}_{savefile}.svg", format='svg')
+        plt.savefig(f"{figdir}/{group}_{savefile}.png", format='png')
     else:
-        plt.savefig(f"{figdir}/{focal_snp}_{savefile}.svg", format='svg')
+        plt.savefig(f"{figdir}/svg_figures/{focal_snp}_{savefile}.svg", format='svg')
+        plt.savefig(f"{figdir}/{group}_{savefile}.png", format='png')
 
     plt.close()
 
@@ -469,7 +471,8 @@ def make_heatmap(snps, query_to_snps, snp_to_query, figdir, group):
     # - the fmt='.2g' bit rounds numbers to 2 decimal places
     # - square layout of the heatmap
 
-    plt.savefig(f"{figdir}/pairwise_cooccurance_{group}.svg", format="svg", bbox_inches="tight")
+    plt.savefig(f"{figdir}/svg_figures/pairwise_cooccurance_{group}.svg", format="svg", bbox_inches="tight")
+    plt.savefig(f"{figdir}/pairwise_cooccurance_{group}.png", format="png", bbox_inches="tight")
 
     plt.close()
 
