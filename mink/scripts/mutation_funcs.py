@@ -402,11 +402,11 @@ def plot_lines(new_snp_dict, figdir, focal_snp, title, savefile, group):
     ax.set_xlabel("Date", fontsize=20)
 
     if not focal_snp:
+        plt.savefig(f"{figdir}/{group}_{savefile}.png", format='png')
         plt.savefig(f"{figdir}/svg_figures/{group}_{savefile}.svg", format='svg')
-        plt.savefig(f"{figdir}/{group}_{savefile}.png", format='png')
     else:
+        plt.savefig(f"{figdir}/{focal_snp}_{savefile}.png", format='png')
         plt.savefig(f"{figdir}/svg_figures/{focal_snp}_{savefile}.svg", format='svg')
-        plt.savefig(f"{figdir}/{group}_{savefile}.png", format='png')
 
     plt.close()
 
