@@ -60,6 +60,8 @@ options:
                 Earliest date for inclusion in report, in format YYYY-MM-DD. Default is 2020-1-1.
 --date-end DATE
                 Latest date for includsion in report, in format YYYY-MM-DD. Default is one week before the current date.
+--find-fastest
+                Flag to find the ten fastest growing SNPs in the last month.
 ```
 
 
