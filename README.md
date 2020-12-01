@@ -6,6 +6,8 @@
 
 It was created by Verity Hill, and uses code from Áine O'Toole and Ben Jackson, all in Rambaut Group at the University of Edinburgh.
 
+NB mink is non-phylogenetic and relies on SNPs already having been called by other software (for example COG-UK's phylopipe). 
+
 ## Installation and requirements
 
 mink is compatible with Linux, MacOS and Windows subsystem for linux. 
