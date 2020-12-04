@@ -93,7 +93,7 @@ def main(sysargs = sys.argv[1:]):
     if args.date_end:
         date_end = dt.datetime.strptime(args.date_end,"%Y-%m-%d").date()
     else:
-        date_end = mfunks.find_mrd(snp_file) #by default find the most recent date in the dataset
+        date_end = mfunks.find_mrd(metadata_file) #by default find the most recent date in the dataset
 
 
     uk = pkg_resources.resource_filename('mink', 'data/mapping_files/gadm36_GBR_2.json')

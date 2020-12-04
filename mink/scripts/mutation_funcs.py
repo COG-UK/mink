@@ -89,11 +89,11 @@ def find_top_ten(snp_file): #not used at the moment, but leave in for now
 
     return snps
 
-def find_mrd(snp_file):
+def find_mrd(metadata_file):
 
     dates = []
 
-    with open(snp_file) as f:
+    with open(metadata_file) as f:
         reader = csv.DictReader(f)
         data = [r for r in reader]
         for line in data:   
