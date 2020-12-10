@@ -42,18 +42,26 @@ def find_ambiguities(adm2s):
 
     for adm2 in adm2s:
         if "|" in adm2:
-            ambiguous.append(set(adm2.split("|")))
+            ambiguous.append(frozenset(adm2.split("|")))
+            
+    amb_set = set(ambiguous)
 
-    for group in ambiguous:
-        for group2 in ambiguous:
-            if group & group2:
-                group |= group2
+    for group in amb_set:
+        for group2 in amb_set:
+            if group != group2:
+                if group & group2:
+                    group |= group2
+        for group2 in amb_set:
+            if group != group2:
+                if group & group2:
+                    group |= group2
 
         clusters.append(group)
 
     for cluster in clusters:
         for place in cluster:
             ambiguous_dict[place] = "|".join(sorted(cluster))
+    
     
     return ambiguous_dict
 
@@ -172,9 +180,9 @@ def make_map(centroid_geo, all_uk, figdir, snp):
 
 
 
-def map_adm2(tax_dict, mapping_json_files, figdir, snp): #So this takes adm2s and plots them onto the whole UK
+def map_adm2(tax_dict, all_uk, figdir, snp): #So this takes adm2s and plots them onto the whole UK
 
-    output = prep_mapping_data(mapping_json_files, tax_dict)
+    output = prep_mapping_data(all_uk, tax_dict)
 
     if type(output) == bool:
         # print("None of the sequences provided have adequate adm2 data and so cannot be mapped")
