@@ -110,7 +110,7 @@ def write_start_report(title, date_data, snps, snp_file, outdir, just_one):
             fw.write(f"    - [{i}](#{link_i})\n")
 
     if just_one:
-        for i in snp_list:
+        for i in snps:
             link_i = i.lower().replace(":","-")
             fw.write(f" - [{i}](#{link_i})\n")
     else:
