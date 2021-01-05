@@ -113,7 +113,7 @@ def main(sysargs = sys.argv[1:]):
             r = csv.DictReader(f)
             data = [i for i in r]
             for line in data:
-                snp_list = line["snps"].split(";")
+                snp_list = line["snps"].split("|")
                 group = line["group"]
 
                 new_snp_list = []
@@ -121,7 +121,7 @@ def main(sysargs = sys.argv[1:]):
                     if i[-1].isdigit():
                         i += "."
                     elif "*" in i:
-                        i.replace("*",".")
+                        i.replace("*","\*")
                     new_snp_list.append(i)
 
                 snps[group] = new_snp_list 

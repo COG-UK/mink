@@ -67,3 +67,22 @@ options:
 ```
 
 
+Format of SNP input:
+
+To use the snp-csv input, the csv should contain three columns headed: group, snps, and description.
+The group column allows mink to analyse the snps in groups, and the group name is used to structure the report.
+The snps contains a pipe-separated list of amino acid changes.
+The description is a free text line which will  be added to the appropriate section of the report.
+
+The snps, whether given as a list on the command line, or in the right column of the csv must be in the following format:
+
+gene:{referenceaminoacid}POSITION{newaminoacid}
+
+eg to look for the D614G mutation in the spike protein, the input will be S:D614G
+
+To look for all possible mutations from the reference in the same gene, input S:D614
+mink will find all of the mutations at that position in the input file.
+
+Stop codons are represented by a "*",eg S:D614\*
+
+mink does not currently find deletions or insertions. This will be added at a later date.
